@@ -16,7 +16,7 @@ script_dir = os.path.dirname(os.path.realpath(__file__))
 
 
 def file_append_line(path, string):
-    with open(path, "a") as file:
+    with open(path, "a", encoding="utf-8") as file:
         file.write(string)
 
 def log_message(path, string):
@@ -30,7 +30,6 @@ class App:
     def main(self):
         self.stop_flag = False
         self.log_started = False
-        self.stray = True
         self.proc_name = ""
 
         if len(sys.argv) == 1:
@@ -40,13 +39,12 @@ class App:
             print("Process to log: ",self.proc_name)
         
         #Crea el icono
-        if self.stray:
-            self.sticon = SystemTrayIcon(
-                cancel_func = self.cancel_logging,
-                open_log_func = self.open_log,
-                process_logging = self.proc_name
-            )
-            self.sticon.setup_system_tray()
+        self.sticon = SystemTrayIcon(
+            cancel_func = self.cancel_logging,
+            open_log_func = self.open_log,
+            process_logging = self.proc_name
+        )
+        self.sticon.setup_system_tray()
 
         atexit.register(self.exit_handler)
 
@@ -105,9 +103,8 @@ class App:
         #Fin del programa.
         log_message(log_file_path,f"--- Process {proc_name} finished, at {datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")} ---")
 
+        #Para el icono del system tray
         self.sticon.stop_system_tray()
-        if not self.stray:
-            showinfo("WTLogger: Terminado", f"El proceso WTLogger que registaba el proceso \"{proc_name}\" ha finalizado.")
 
     #Manejador de cerrar el programa
     def exit_handler(self):

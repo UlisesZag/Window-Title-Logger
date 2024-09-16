@@ -8,7 +8,7 @@ import webbrowser
 from PIL import Image
 import pystray
 
-from tkinter.messagebox import showinfo
+from tkinter.messagebox import showinfo, showerror
 
 import modules.process_info as procinfo
 
@@ -25,6 +25,8 @@ def log_message(path, string):
         file_append_line(path, string+"\n")
     except PermissionError:
         print(f"ERROR: Permission denied for file {path}. Make sure the program has the correct permissions. Try running as admin.")
+        showerror("Error", f"Permission denied for file {path}. Make sure the program has the correct permissions. Try running as admin.")
+        sys.exit(1)
 
 class App:
     def main(self):
@@ -37,7 +39,7 @@ class App:
         else:
             self.proc_name = sys.argv[1]
             print("Process to log: ",self.proc_name)
-        
+
         #Crea el icono
         self.sticon = SystemTrayIcon(
             cancel_func = self.cancel_logging,
@@ -110,7 +112,7 @@ class App:
     def exit_handler(self):
         #Fin del programa.
         if self.log_started:
-            log_message(self.proc_name+".log", f"--- Logger terminated, at {datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")} ---")
+            log_message(script_dir + "/" + self.proc_name+".log", f"--- Logger terminated, at {datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")} ---")
         
         self.sticon.stop_system_tray()
     
@@ -135,11 +137,12 @@ class SystemTrayIcon():
         self.process_logging = process_logging
 
     def setup_system_tray(self):
-        image = Image.open("strayico.ico")
+        image = Image.open(script_dir+"/strayico.ico")
         menu = (pystray.MenuItem(f' - Process logging: {self.process_logging} - ',  None),
                 pystray.MenuItem('Open log file', self.open_log_func),
                 pystray.MenuItem('End logging',self.cancel_logging))
         self.icon = pystray.Icon("Window Title Logger", image, "Window Title Logger", menu)
+
         self.icon.run_detached(setup=self.icon_loop)
     
     def stop_system_tray(self):

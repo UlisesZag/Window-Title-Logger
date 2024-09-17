@@ -5,8 +5,11 @@ from tkinter.messagebox import showinfo
 import sys
 import psutil
 import notifypy
+import os
 
 import modules.process_info as proc_info
+
+script_dir = os.path.dirname(os.path.realpath(__file__))
 
 class ProcessSelectGUI(tk.Tk):
     def __init__(self, log_loop_func=None, logs_folder_func=None):
@@ -75,10 +78,11 @@ Licence: MIT
 )
         
 #Toast notification
-def start_toast(proc_name):
+def send_toast(title, message, icon_path):
     notification = notifypy.Notify()
-    notification.title = f"Started logging {proc_name}" 
-    notification.message = f"Window Title Logger started logging the process {proc_name} into the file {proc_name}.log. You can access the logger from the system tray."
+    notification.title = title
+    notification.message = message
     notification.application_name = 'Window Title Logger'
+    notification.icon = icon_path
 
     notification.send()

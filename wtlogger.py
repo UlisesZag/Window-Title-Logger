@@ -51,7 +51,11 @@ class App:
 
     #Bucle de logeo
     def log_loop(self, proc_name):
-        ui.start_toast(proc_name)
+        ui.send_toast(
+            f"Started logging {proc_name}",
+            f"Window Title Logger started logging the process {proc_name} into the file {proc_name}.log. You can access the logger from the system tray.",
+            script_dir+'/strayico.ico'
+            )
 
         if not os.path.isdir(script_dir + "/logs/"):
             os.mkdir(script_dir + "/logs/")
@@ -119,6 +123,12 @@ class App:
 
         #Para el icono del system tray
         self.sticon.stop_system_tray()
+
+        ui.send_toast(
+            f"Stopped logging {proc_name}",
+            f"Window Title Logger finished logging the process {proc_name}.",
+            script_dir+'/strayico.ico'
+            )
 
     #Manejador de cerrar el programa
     def exit_handler(self):

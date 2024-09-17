@@ -11,7 +11,7 @@ las cuales salian en el titulo de la aplicacion.
 El usuario puede o elegir el proceso con un menu al abrir el logger, o pasar el nombre del proceso como argumento por linea de comandos.
 
 ### TODO:
-- Crear una interfaz de usuario para que el usuario pueda seleccionar el proceso si no lo paso como argumento por linea de comandos.
+- Poder seleccionar un proceso por PID para poder seleccionar un proceso desde un grupo de procesos con el mismo nombre.
 
 🇬🇧 🇺🇸
 
@@ -24,4 +24,4 @@ which appeared in the application title.
 The user can either choose the process from a menu when opening the logger, or pass the process name as a command line argument.
 
 ### TODO:
-- Create a user interface so that the user can select the process if it is not passed as an argument on the command line.
+- That you can select process by PID for selecting a specific process from a group of processes with the same name.

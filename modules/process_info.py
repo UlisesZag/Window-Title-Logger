@@ -50,3 +50,20 @@ def get_proc_handle(proc_name):
         for hwnd in hwnds:
             if IsWindowVisible(hwnd):
                 return hwnd
+
+def is_visible_by_name(proc_name):
+    id = get_process_id_by_name(proc_name)[0]
+    hwnds = get_hwnds_for_pid(id)
+    for hwnd in hwnds:
+        if IsWindowVisible(hwnd):
+            return True
+    
+    return False
+
+def is_visible_by_id(proc_id):
+    hwnds = get_hwnds_for_pid(proc_id)
+    for hwnd in hwnds:
+        if IsWindowVisible(hwnd):
+            return True
+    
+    return False

@@ -11,6 +11,7 @@ import pystray
 from tkinter.messagebox import showinfo, showerror
 
 import modules.process_info as procinfo
+import modules.ui as ui
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -35,10 +36,23 @@ class App:
         self.proc_name = ""
 
         if len(sys.argv) == 1:
-            self.proc_name = input("Process name to log: ")
+            #self.proc_name = input("Process name to log: ")
+            self.ui = ui.ProcessSelectGUI(self.log_loop_from_ui)
+            self.ui.mainloop()
         else:
             self.proc_name = sys.argv[1]
             print("Process to log: ",self.proc_name)
+            self.log_loop(self.proc_name)
+
+    def log_loop_from_ui(self, proc_name):
+        self.ui.destroy()
+        self.proc_name = proc_name
+        self.log_loop(proc_name)
+
+    #Bucle de logeo
+    def log_loop(self, proc_name):
+        log_file_path = script_dir + "/" + proc_name+".log"
+        last_title = ""
 
         #Crea el icono
         self.sticon = SystemTrayIcon(
@@ -50,13 +64,6 @@ class App:
 
         atexit.register(self.exit_handler)
 
-        print()
-        self.log_loop(self.proc_name)
-
-    #Bucle de logeo
-    def log_loop(self, proc_name):
-        log_file_path = script_dir + "/" + proc_name+".log"
-        last_title = ""
         
         #Espera a que el programa arranque
         print("Waiting for the process to start...")
@@ -116,6 +123,8 @@ class App:
         
         self.sticon.stop_system_tray()
     
+    #Cancela el loggeo poniendo el flag de parar como True;
+    #Este se chequea en cada iteracion del bucle principal; Si es True se interrumpe.
     def cancel_logging(self):
         self.stop_flag = True
     

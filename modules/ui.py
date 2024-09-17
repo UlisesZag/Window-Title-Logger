@@ -4,14 +4,16 @@ from tkinter.messagebox import showinfo
 
 import sys
 import psutil
+import notifypy
 
 import modules.process_info as proc_info
 
 class ProcessSelectGUI(tk.Tk):
-    def __init__(self, log_loop_func):
+    def __init__(self, log_loop_func=None, logs_folder_func=None):
         super().__init__()
         self.log_loop_func = log_loop_func
         self.proc_var = tk.StringVar(value="")
+        self.logs_folder_func = logs_folder_func
     
         #Construimos la UI
         self.title("Window Title Logger")
@@ -20,16 +22,14 @@ class ProcessSelectGUI(tk.Tk):
         self.menubar = tk.Menu(self)
         self.config(menu=self.menubar)
 
-        self.about_menu = tk.Menu(self.menubar)
-        self.about_menu.add_command(
-            label='About',
-            command=self.about,
-        )
+        self.file_menu = tk.Menu(self.menubar)
+        self.file_menu.add_command(label='Open logs folder',command=self.logs_folder)
 
-        self.menubar.add_cascade(
-            label="About",
-            menu=self.about_menu
-        )
+        self.about_menu = tk.Menu(self.menubar)
+        self.about_menu.add_command(label='About',command=self.about)
+
+        self.menubar.add_cascade(label="File",menu=self.file_menu)
+        self.menubar.add_cascade(label="About",menu=self.about_menu)
 
         #Frame
         self.select_frame = ttk.Labelframe(self, text="Process Selection")
@@ -63,6 +63,9 @@ class ProcessSelectGUI(tk.Tk):
 
         self.select_combobox["values"] = procs
     
+    def logs_folder(self):
+        self.logs_folder_func()
+
     def about(self):
         showinfo("About", 
 '''Window Title Logger v0.1
@@ -70,3 +73,12 @@ Github: https://github.com/UlisesZag/Window-Title-Logger
 Licence: MIT
 '''
 )
+        
+#Toast notification
+def start_toast(proc_name):
+    notification = notifypy.Notify()
+    notification.title = f"Started logging {proc_name}" 
+    notification.message = f"Window Title Logger started logging the process {proc_name} into the file {proc_name}.log. You can access the logger from the system tray."
+    notification.application_name = 'Window Title Logger'
+
+    notification.send()

@@ -37,7 +37,7 @@ class App:
 
         if len(sys.argv) == 1:
             #self.proc_name = input("Process name to log: ")
-            self.ui = ui.ProcessSelectGUI(self.log_loop_from_ui)
+            self.ui = ui.ProcessSelectGUI(log_loop_func=self.log_loop_from_ui, logs_folder_func=self.open_logs_dir)
             self.ui.mainloop()
         else:
             self.proc_name = sys.argv[1]
@@ -51,7 +51,12 @@ class App:
 
     #Bucle de logeo
     def log_loop(self, proc_name):
-        log_file_path = script_dir + "/" + proc_name+".log"
+        ui.start_toast(proc_name)
+
+        if not os.path.isdir(script_dir + "/logs/"):
+            os.mkdir(script_dir + "/logs/")
+
+        log_file_path = script_dir + "/logs/" + proc_name+".log"
         last_title = ""
 
         #Crea el icono
@@ -119,7 +124,7 @@ class App:
     def exit_handler(self):
         #Fin del programa.
         if self.log_started:
-            log_message(script_dir + "/" + self.proc_name+".log", f"--- Logger terminated, at {datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")} ---")
+            log_message(script_dir + "/logs/" + self.proc_name+".log", f"--- Logger terminated, at {datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")} ---")
         
         self.sticon.stop_system_tray()
     
@@ -130,12 +135,15 @@ class App:
     
     #Abre el archivo de log
     def open_log(self):
-        log_path = script_dir+"/"+self.proc_name+".log"
+        log_path = script_dir+"/logs/"+self.proc_name+".log"
 
         print(f"Opening file: {log_path}")
 
         if os.path.exists(log_path):
             webbrowser.open(log_path)
+    
+    def open_logs_dir(self):
+        webbrowser.open(script_dir+"/logs/")
 
 
 class SystemTrayIcon():

@@ -12,6 +12,7 @@ from tkinter.messagebox import showinfo, showerror
 
 import modules.process_info as procinfo
 import modules.ui as ui
+import modules.configfile as configfile
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -37,7 +38,11 @@ class App:
 
         if len(sys.argv) == 1:
             #self.proc_name = input("Process name to log: ")
-            self.ui = ui.ProcessSelectGUI(log_loop_func=self.log_loop_from_ui, logs_folder_func=self.open_logs_dir)
+            self.ui = ui.ProcessSelectGUI(
+                log_loop_func=self.log_loop_from_ui, 
+                logs_folder_func=self.open_logs_dir,
+                script_dir=script_dir
+                )
             self.ui.mainloop()
         else:
             self.proc_name = sys.argv[1]
@@ -51,6 +56,9 @@ class App:
 
     #Bucle de logeo
     def log_loop(self, proc_name):
+        #Carga la configuracion
+        config = configfile.load_config(script_dir+"/config.json")
+
         ui.send_toast(
             f"Started logging {proc_name}",
             f"Window Title Logger started logging the process {proc_name} into the file {proc_name}.log. You can access the logger from the system tray.",
@@ -73,7 +81,7 @@ class App:
 
         atexit.register(self.exit_handler)
 
-        
+
         #Espera a que el programa arranque
         print("Waiting for the process to start...")
         seconds = 30
@@ -88,8 +96,8 @@ class App:
                 seconds = -1
                 break
             
-            time.sleep(0.25)
-            seconds -= 0.25
+            time.sleep(config["wait_time_interval"])
+            seconds -= config["wait_time_interval"]
         
         #Si seconds es 0 quiere decir timeout, no encontro el programa y sale sin esperar.
         if seconds <= 0:
@@ -116,7 +124,8 @@ class App:
                 log_message(log_file_path, f"[{datetime.datetime.now().strftime("%d/%m/%Y %I:%M%p")}] "+proc_title)
                 last_title = proc_title
             
-            time.sleep(0.25)
+            #TODO: Crear un menu de configuracion donde se ajuste el tiempo de espera a nuevo escaneo.
+            time.sleep(config["log_time_interval"]) 
         
         #Fin del programa.
         log_message(log_file_path,f"--- Process {proc_name} finished, at {datetime.datetime.now().strftime("%I:%M%p on %B %d, %Y")} ---")
